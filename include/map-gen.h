@@ -31,7 +31,7 @@ typedef struct {
 
     Grid_item **grid; // 2d array
 
-    Vector2_uint home;
+    Vector2 home;
 } Map;
 
 /*
@@ -54,7 +54,7 @@ Map gen_map(uint width, uint height, uint f_num, uint b_num, uint seed) {
         .width = width,
         .height = height,
         .grid = __grid,
-        .home = (Vector2_uint) { width / 2, height / 2 }
+        .home = (Vector2) { (int)width / 2, (int)height / 2 }
     };
 
     for (uint x = 0; x < width; x++) {
@@ -75,14 +75,14 @@ Map gen_map(uint width, uint height, uint f_num, uint b_num, uint seed) {
 
     // Set random food locations
     for (uint i = 0; i < f_num; i++) {
-        Vector2_uint pos = random_vec_uint(width, height);
-        map.grid[pos.x][pos.y].food_amount = rand_uint(MAX_FOOD_AMOUNT);
+        Vector2 pos = random_vec_uint(width, height);
+        map.grid[(uint)pos.x][(uint)pos.y].food_amount = rand_uint(MAX_FOOD_AMOUNT);
     }
 
     // Set random barriers
     for (uint i = 0; i < b_num; i++) {
-        Vector2_uint pos = random_vec_uint(width, height);
-        map.grid[pos.x][pos.y].is_blocked = true;
+        Vector2 pos = random_vec_uint(width, height);
+        map.grid[(uint)pos.x][(uint)pos.y].is_blocked = true;
     }
 
     return map;
