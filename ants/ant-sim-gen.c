@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
         }
         // Ants
         for (uint i = 0; i < ant_num; i++) {
-            fprintf(outfile, "%d,%d ", ants[i].pos.x, ants[i].pos.y);
+            fprintf(outfile, "%d,%d ", (uint)ants[i].pos.x, (uint)ants[i].pos.y);
         }
         fputs("\n", outfile);
     }
