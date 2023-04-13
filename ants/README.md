@@ -9,10 +9,10 @@ Each ant moves randomly until either:
 
 Once an ant reaches 'food', it will return directly 'home', leaving a trail of pheromones as it goes.
 
-## How to Run
-1. Compile the C source: `gcc ant-sim-gen.c -o ant-sim-gen -lm`
-2. Run the generator: `./ant-sim-gen`
-3. Run the python 'visualiser': `python show-ants.py`
+## How to Run (from [..](../))
+1. Compile the C source: `make ants`
+2. Run the generator: `./ant-sim`
+3. Run the python 'visualiser': `python ants/show-ants.py`
 4. Press `SPACE` to start the replay
 5. Consider changing some variables in [ant-sim-gen.c](./ant-sim-gen.c) or [ants.h](./ants.h) (remember to recompile - this will be changed soon).
    If you change the dimensions or number of ants, remember to update [show-ants.py](./show-ants.py) accordingly.
