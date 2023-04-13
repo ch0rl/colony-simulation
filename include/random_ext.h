@@ -15,7 +15,7 @@ uint rand_uint(uint max) {
     return rand() % max;
 }
 
-float rand_float(float max) {
+double rand_dbl(double max) {
     return max * (rand() / (float)RAND_MAX);
 }
 
