@@ -1,3 +1,14 @@
+# VSCode
+.vscode/
+
+# Executable/Binary files
+ant-sim-gen
+map-state
+
+# Debugging
+peda*
+
+# vvv GitHub vvv
 # Prerequisites
 *.d
 
