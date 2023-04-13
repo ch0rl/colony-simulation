@@ -19,7 +19,7 @@
 #define ANT_PATH_BUFF_INC 20            // How much to increment the path buffer
 
 typedef struct {
-    Vector2_uint pos;
+    Vector2 pos;
     float facing;  // Radians from North
     bool has_food;
 } Ant;
@@ -29,7 +29,7 @@ typedef struct {
  * ---------
  * Generate ants.
  */
-Ant *make_ants(uint ant_num, Vector2_uint init_pos) {
+Ant *make_ants(uint ant_num, Vector2 init_pos) {
     Ant *ants = (Ant *)malloc(sizeof(Ant) * ant_num);
     if (ants == NULL) {
         err_loc("ants.h > make_ants", "Failed to allocate ants.", ERR_CODE_ALLOC);
@@ -39,7 +39,7 @@ Ant *make_ants(uint ant_num, Vector2_uint init_pos) {
     for (uint i = 0; i < ant_num; i++) {
         ants[i] = (Ant){
             .pos = init_pos,
-            .facing = rand_float(2 * PI),
+            .facing = rand_dbl(2 * PI),
             .has_food = false
         };
     }
@@ -72,28 +72,28 @@ void tick_ants(Ant *ants, uint ant_num, Map *map) {
                 ant->has_food = false;
             } else {
                 // Move towards home
-                ant->pos = vector_uint_add(ant->pos, vector_round(vector_float_times_k(
-                    unit_vector_int(vector_uint_sub(map->home, ant->pos)), ANT_SPEED
+                ant->pos = vector_add(ant->pos, vector_round(vector_times_k(
+                    unit_vector(vector_sub(map->home, ant->pos)), ANT_SPEED
                 )));
                 
                 // Drop pheromone
-                map->grid[ant->pos.x][ant->pos.y].pheromone_lvl = ANT_PHEROMONE_MAX;
+                map->grid[(uint)ant->pos.x][(uint)ant->pos.y].pheromone_lvl = ANT_PHEROMONE_MAX;
             }
         } else {
             // TODO: View range
             // Check if food is within range
             uint num_neighbours;
-            Vector2_uint *neighbours = neighbour_points(ant->pos, ANT_FOOD_VIEW_RANGE, &num_neighbours);
+            Vector2 *neighbours = neighbour_points(ant->pos, ANT_FOOD_VIEW_RANGE, &num_neighbours);
             for (uint n_i = 0; n_i < num_neighbours; n_i++) {
-                Vector2_uint neighbour = neighbours[n_i];
+                Vector2 neighbour = neighbours[n_i];
 
                 // Make sure neighbour in bounds
                 if (0 <= neighbour.x && neighbour.x < map->width
                     && 0 <= neighbour.y && neighbour.y < map->height) {
                     // Check if there is food
-                    if (map->grid[neighbour.x][neighbour.y].food_amount > 0) {
-                        ant->pos = vector_uint_add(ant->pos, vector_round(vector_float_times_k(
-                            unit_vector_int(vector_uint_sub(neighbour, ant->pos)), ANT_SPEED
+                    if (map->grid[(uint)neighbour.x][(uint)neighbour.y].food_amount > 0) {
+                        ant->pos = vector_add(ant->pos, vector_round(vector_times_k(
+                            unit_vector(vector_sub(neighbour, ant->pos)), ANT_SPEED
                         )));
                         free(neighbours);
                         goto AFTER_MOVE_ANT;
@@ -104,23 +104,23 @@ void tick_ants(Ant *ants, uint ant_num, Map *map) {
 
             // Get direction based on nearby pheromones
             neighbours = neighbour_points(ant->pos, ANT_SMELL_RANGE, &num_neighbours);
-            Vector2_int new_dir = (Vector2_int){ 0, 0 };
+            Vector2 new_dir = (Vector2){ 0, 0 };
 
             uint p_level;
             for (uint n_i = 0; n_i < num_neighbours; n_i++) {
                 // new_dir += (pos->neighbour) * (MAX - level)
-                Vector2_uint neighbour = neighbours[n_i];
+                Vector2 neighbour = neighbours[n_i];
 
                 // Make sure neighbour in bounds
                 if (0 <= neighbour.x && neighbour.x < map->width
                     && 0 <= neighbour.y && neighbour.y < map->height) {
 
                     // Only take into account trails that exist
-                    p_level = map->grid[neighbour.x][neighbour.y].pheromone_lvl;
+                    p_level = map->grid[(uint)neighbour.x][(uint)neighbour.y].pheromone_lvl;
                     if (p_level > 0) {
-                        new_dir = vector_int_add(
-                            new_dir, vector_int_sub_k(
-                                vector_uint_sub(neighbour, ant->pos), ANT_PHEROMONE_MAX - p_level
+                        new_dir = vector_add(
+                            new_dir, vector_sub_k(
+                                vector_sub(neighbour, ant->pos), ANT_PHEROMONE_MAX - p_level
                             )
                         );
                     }
@@ -136,8 +136,8 @@ void tick_ants(Ant *ants, uint ant_num, Map *map) {
             }
 
             // Set new direction and move
-            ant->pos = vector_uint_add(ant->pos, vector_round(vector_float_times_k(
-                unit_vector_int(new_dir), ANT_SPEED
+            ant->pos = vector_add(ant->pos, vector_round(vector_times_k(
+                unit_vector(new_dir), ANT_SPEED
             )));
 
 AFTER_MOVE_ANT:
@@ -155,10 +155,10 @@ AFTER_MOVE_ANT:
             }
 
             // Check if collided with food
-            if (map->grid[ant->pos.x][ant->pos.y].food_amount > 0) {
+            if (map->grid[(uint)ant->pos.x][(uint)ant->pos.y].food_amount > 0) {
                 // nom nom
                 ant->has_food = true;
-                map->grid[ant->pos.x][ant->pos.y].food_amount--;
+                map->grid[(uint)ant->pos.x][(uint)ant->pos.y].food_amount--;
             }
         }
     }
