@@ -1,4 +1,6 @@
 # Colony Simulations
+This is a backup of the old C version.
+
 A collection of very simple colony simulations; currently:
 - [Ants](ants/)
 
